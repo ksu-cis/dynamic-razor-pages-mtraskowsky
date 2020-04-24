@@ -14,16 +14,16 @@ namespace Movies.Pages
         /// </summary>
         public IEnumerable<Movie> Movies { get; protected set; }
 
-        [BindProperty]
         /// <summary>
         /// The current search terms
         /// </summary>
+        [BindProperty]
         public string SearchTerms { get; set; } = "";
 
-        [BindProperty]
         /// <summary>
         /// The filtered MPAARatings
         /// </summary>
+        [BindProperty]
         public string[] MPAARatings { get; set; }
 
         /// <summary>
@@ -45,17 +45,33 @@ namespace Movies.Pages
         public double? IMDBMax { get; set; }
 
         /// <summary>
+        /// The Rotten tomatoes minimum filter value
+        /// </summary>
+        [BindProperty]
+        public double? TomatoesMin { get; set; }
+
+        /// <summary>
+        /// The Rotten Tamatoes maximum filter value
+        /// </summary>
+        [BindProperty]
+        public double? TomatoesMax { get; set; }
+
+        /// <summary>
         /// Gets the serach results for display on the page
         /// </summary>
-        public void OnGet(double? IMDBin, double?IMDBMax)
+        public void OnGet(string SearchTerms, double? TomatoesMin)
         {
-            this.IMDBin = IMDBin;
-            this.IMDBMax = IMDBMax;
+            this.SearchTerms = SearchTerms;
+            this.TomatoesMin = TomatoesMin;
+            Movies = MovieDatabase.All;
+        }
+
+        public void OnPost()
+        {
             Movies = MovieDatabase.Search(SearchTerms);
             Movies = MovieDatabase.FilterByMPAARating(Movies, MPAARatings);
-            //Movies = MovieDatabase.FilterByGenre(Movies, Genres);
             Movies = MovieDatabase.FilterByIMDBRating(Movies, IMDBin, IMDBMax);
-
+            Movies = MovieDatabase.FilterByRottenTomatoesRating(Movies, TomatoesMin, TomatoesMax);
         }
 
     }
